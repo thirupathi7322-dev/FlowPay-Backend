@@ -1,8 +1,12 @@
 package com.flowpay.backend.controller;
 
-import com.flowpay.backend.entity.User;
+import com.flowpay.backend.dto.RegisterRequest;
+import com.flowpay.backend.dto.UserResponse;
 import com.flowpay.backend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
+
 import java.util.List;
 
 @RestController
@@ -15,13 +19,16 @@ public class UserController {
         this.userService = userService;
     }
 
+
+
+
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
-        return userService.registerUser(user);
-    }
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public UserResponse registerUser(@Valid @RequestBody RegisterRequest request) {
+        return userService.registerUser(request);
     }
 
+    @GetMapping
+    public List<UserResponse> getAllUsers() {
+        return userService.getAllUsers();
+    }
 }
