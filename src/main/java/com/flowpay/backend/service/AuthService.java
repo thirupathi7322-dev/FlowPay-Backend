@@ -15,11 +15,16 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
 
     public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       JwtService jwtService) {
+
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
     public LoginResponse login(LoginRequest request) {
 
@@ -55,12 +60,13 @@ public class AuthService {
         }
 
         System.out.println("===== Login Successful =====");
+        String token = jwtService.generateToken(user);
 
         return new LoginResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                "Login Successful"
+                token
         );
     }
 }
