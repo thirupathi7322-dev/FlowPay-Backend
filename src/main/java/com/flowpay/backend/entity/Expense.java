@@ -27,6 +27,10 @@ public class Expense {
     @JoinColumn(name = "group_id", nullable = false)
     private ExpenseGroup expenseGroup;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -34,18 +38,21 @@ public class Expense {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Expense(Long id,
-                   String title,
-                   BigDecimal amount,
-                   User paidBy,
-                   ExpenseGroup expenseGroup,
-                   LocalDateTime createdAt) {
+    public Expense(
+            Long id,
+            String title,
+            BigDecimal amount,
+            User paidBy,
+            ExpenseGroup expenseGroup,
+            Category category,
+            LocalDateTime createdAt) {
 
         this.id = id;
         this.title = title;
         this.amount = amount;
         this.paidBy = paidBy;
         this.expenseGroup = expenseGroup;
+        this.category = category;
         this.createdAt = createdAt;
     }
 
@@ -87,6 +94,14 @@ public class Expense {
 
     public void setExpenseGroup(ExpenseGroup expenseGroup) {
         this.expenseGroup = expenseGroup;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public LocalDateTime getCreatedAt() {

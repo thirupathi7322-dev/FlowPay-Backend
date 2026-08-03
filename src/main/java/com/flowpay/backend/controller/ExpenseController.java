@@ -47,4 +47,14 @@ public class ExpenseController {
 
         return expenseService.calculateSettlements(groupId);
     }
+    @GetMapping("/category/{categoryId}")
+    public List<ExpenseResponse> getExpensesByCategory(
+            @PathVariable Long groupId,
+            @PathVariable Long categoryId) {
+
+        return expenseService.getExpensesByCategory(
+                groupId,
+                categoryId
+        );
+    }
 }

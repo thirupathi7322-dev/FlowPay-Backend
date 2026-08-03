@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.flowpay.backend.entity.Category;
+import com.flowpay.backend.repository.CategoryRepository;
 
 @Service
 public class ExpenseService {
@@ -29,17 +31,20 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ExpenseGroupRepository expenseGroupRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final ExpenseParticipantRepository expenseParticipantRepository;
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
             ExpenseGroupRepository expenseGroupRepository,
             UserRepository userRepository,
+            CategoryRepository categoryRepository,
             ExpenseParticipantRepository expenseParticipantRepository) {
 
         this.expenseRepository = expenseRepository;
         this.expenseGroupRepository = expenseGroupRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
         this.expenseParticipantRepository = expenseParticipantRepository;
     }
 
@@ -55,6 +60,9 @@ public class ExpenseService {
         User user = userRepository.findById(request.getPaidByUserId())
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() ->
+                        new RuntimeException("Category not found"));
 
         Expense expense = new Expense();
 
@@ -62,6 +70,7 @@ public class ExpenseService {
         expense.setAmount(request.getAmount());
         expense.setPaidBy(user);
         expense.setExpenseGroup(group);
+        expense.setCategory(category);
 
         Expense savedExpense = expenseRepository.save(expense);
 
@@ -83,6 +92,7 @@ public class ExpenseService {
                 savedExpense.getId(),
                 savedExpense.getTitle(),
                 savedExpense.getAmount(),
+                savedExpense.getCategory().getName(),
                 savedExpense.getPaidBy().getName(),
                 savedExpense.getCreatedAt()
         );
@@ -100,6 +110,7 @@ public class ExpenseService {
                         expense.getId(),
                         expense.getTitle(),
                         expense.getAmount(),
+                        expense.getCategory().getName(),
                         expense.getPaidBy().getName(),
                         expense.getCreatedAt()
                 ))
@@ -239,5 +250,29 @@ public class ExpenseService {
         }
 
         return settlements;
+    }
+    public List<ExpenseResponse> getExpensesByCategory(
+            Long groupId,
+            Long categoryId) {
+
+        ExpenseGroup group = expenseGroupRepository.findById(groupId)
+                .orElseThrow(() ->
+                        new RuntimeException("Group not found"));
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() ->
+                        new RuntimeException("Category not found"));
+
+        return expenseRepository.findByExpenseGroupAndCategory(group, category)
+                .stream()
+                .map(expense -> new ExpenseResponse(
+                        expense.getId(),
+                        expense.getTitle(),
+                        expense.getAmount(),
+                        expense.getCategory().getName(),
+                        expense.getPaidBy().getName(),
+                        expense.getCreatedAt()
+                ))
+                .toList();
     }
 }
