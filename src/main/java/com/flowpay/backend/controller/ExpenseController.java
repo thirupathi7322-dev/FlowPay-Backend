@@ -2,6 +2,7 @@ package com.flowpay.backend.controller;
 
 import com.flowpay.backend.dto.CreateExpenseRequest;
 import com.flowpay.backend.dto.ExpenseResponse;
+import com.flowpay.backend.dto.SettlementResponse;
 import com.flowpay.backend.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,12 @@ public class ExpenseController {
             @PathVariable Long groupId) {
 
         return expenseService.calculateBalances(groupId);
+    }
+    @GetMapping("/settlements")
+    public List<SettlementResponse> getSettlements(
+            @PathVariable Long groupId) {
+        System.out.println("===== SETTLEMENT API HIT =====");
+
+        return expenseService.calculateSettlements(groupId);
     }
 }

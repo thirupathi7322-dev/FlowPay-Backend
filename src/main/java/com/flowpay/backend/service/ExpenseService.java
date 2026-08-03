@@ -1,24 +1,27 @@
 package com.flowpay.backend.service;
 
+import com.flowpay.backend.dto.BalanceResponse;
 import com.flowpay.backend.dto.CreateExpenseRequest;
 import com.flowpay.backend.dto.ExpenseResponse;
+import com.flowpay.backend.dto.SettlementResponse;
+import com.flowpay.backend.dto.UserBalance;
 import com.flowpay.backend.entity.Expense;
 import com.flowpay.backend.entity.ExpenseGroup;
+import com.flowpay.backend.entity.ExpenseParticipant;
 import com.flowpay.backend.entity.User;
 import com.flowpay.backend.repository.ExpenseGroupRepository;
+import com.flowpay.backend.repository.ExpenseParticipantRepository;
 import com.flowpay.backend.repository.ExpenseRepository;
 import com.flowpay.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import com.flowpay.backend.entity.ExpenseParticipant;
-import com.flowpay.backend.repository.ExpenseParticipantRepository;
 import org.springframework.transaction.annotation.Transactional;
-import com.flowpay.backend.dto.BalanceResponse;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExpenseService {
@@ -60,18 +63,15 @@ public class ExpenseService {
         expense.setPaidBy(user);
         expense.setExpenseGroup(group);
 
-        Expense savedExpense =
-                expenseRepository.save(expense);
-        System.out.println(request.getParticipantIds());
+        Expense savedExpense = expenseRepository.save(expense);
+
         for (Long participantId : request.getParticipantIds()) {
-            System.out.println("Saving participant: " + participantId);
 
             User participant = userRepository.findById(participantId)
                     .orElseThrow(() ->
                             new RuntimeException("Participant not found"));
 
-            ExpenseParticipant expenseParticipant =
-                    new ExpenseParticipant();
+            ExpenseParticipant expenseParticipant = new ExpenseParticipant();
 
             expenseParticipant.setExpense(savedExpense);
             expenseParticipant.setUser(participant);
@@ -105,6 +105,7 @@ public class ExpenseService {
                 ))
                 .toList();
     }
+
     public List<BalanceResponse> calculateBalances(Long groupId) {
 
         ExpenseGroup group = expenseGroupRepository.findById(groupId)
@@ -165,5 +166,78 @@ public class ExpenseService {
                         entry.getValue()
                 ))
                 .toList();
+    }
+
+    private List<UserBalance> getUserBalances(Long groupId) {
+
+        return new ArrayList<>(
+                calculateBalances(groupId)
+                        .stream()
+                        .map(balance -> new UserBalance(
+                                balance.getUserId(),
+                                balance.getUserName(),
+                                balance.getBalance()
+                        ))
+                        .toList()
+        );
+    }
+
+    public List<SettlementResponse> calculateSettlements(Long groupId) {
+
+        List<UserBalance> balances = getUserBalances(groupId);
+
+        List<UserBalance> creditors = new ArrayList<>(
+                balances.stream()
+                        .filter(b -> b.getBalance().compareTo(BigDecimal.ZERO) > 0)
+                        .toList()
+        );
+
+        List<UserBalance> debtors = new ArrayList<>(
+                balances.stream()
+                        .filter(b -> b.getBalance().compareTo(BigDecimal.ZERO) < 0)
+                        .toList()
+        );
+
+        List<SettlementResponse> settlements = new ArrayList<>();
+
+        int i = 0;
+        int j = 0;
+
+        while (i < debtors.size() && j < creditors.size()) {
+
+            UserBalance debtor = debtors.get(i);
+            UserBalance creditor = creditors.get(j);
+
+            BigDecimal debt = debtor.getBalance().abs();
+            BigDecimal credit = creditor.getBalance();
+
+            BigDecimal amount = debt.min(credit);
+
+            settlements.add(
+                    new SettlementResponse(
+                            debtor.getUserName(),
+                            creditor.getUserName(),
+                            amount
+                    )
+            );
+
+            debtor.setBalance(
+                    debtor.getBalance().add(amount)
+            );
+
+            creditor.setBalance(
+                    creditor.getBalance().subtract(amount)
+            );
+
+            if (debtor.getBalance().compareTo(BigDecimal.ZERO) == 0) {
+                i++;
+            }
+
+            if (creditor.getBalance().compareTo(BigDecimal.ZERO) == 0) {
+                j++;
+            }
+        }
+
+        return settlements;
     }
 }
