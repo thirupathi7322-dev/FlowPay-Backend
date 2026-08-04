@@ -14,6 +14,7 @@ import java.util.List;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
 
     List<GroupMember> findByExpenseGroup(ExpenseGroup expenseGroup);
+    long countByExpenseGroup(ExpenseGroup expenseGroup);
 
     boolean existsByExpenseGroupAndUser(
             ExpenseGroup expenseGroup,

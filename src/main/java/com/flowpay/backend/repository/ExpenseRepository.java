@@ -10,6 +10,7 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findByExpenseGroup(ExpenseGroup expenseGroup);
+    long countByExpenseGroup(ExpenseGroup expenseGroup);
 
     List<Expense> findByExpenseGroupAndCategory(
             ExpenseGroup expenseGroup,
