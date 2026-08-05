@@ -42,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String jwt = authHeader.substring(7);
+        System.out.println(jwt);
         String email = jwtService.extractEmail(jwt);
         System.out.println("Email: " + email);
         User user = userRepository.findByEmail(email)
