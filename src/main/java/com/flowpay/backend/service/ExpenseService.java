@@ -33,21 +33,23 @@ public class ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseParticipantRepository expenseParticipantRepository;
+    private final NotificationService notificationService;
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
             ExpenseGroupRepository expenseGroupRepository,
             UserRepository userRepository,
             CategoryRepository categoryRepository,
-            ExpenseParticipantRepository expenseParticipantRepository) {
+            ExpenseParticipantRepository expenseParticipantRepository,
+            NotificationService notificationService) {
 
         this.expenseRepository = expenseRepository;
         this.expenseGroupRepository = expenseGroupRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.expenseParticipantRepository = expenseParticipantRepository;
+        this.notificationService = notificationService;
     }
-
     @Transactional
     public ExpenseResponse createExpense(
             Long groupId,
@@ -86,6 +88,11 @@ public class ExpenseService {
             expenseParticipant.setUser(participant);
 
             expenseParticipantRepository.save(expenseParticipant);
+            notificationService.createNotification(
+                    participant.getId(),
+                    "New expense \"" + savedExpense.getTitle()
+                            + "\" was added to your group."
+            );
         }
 
         return new ExpenseResponse(
