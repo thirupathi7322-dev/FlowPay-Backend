@@ -1,135 +1,266 @@
-# FlowPay Backend
+# FlowPay 💸
 
-A Splitwise-inspired expense sharing backend built with Spring Boot.
+> **A Secure Crypto Payment Gateway API built with Java & Spring Boot**
 
-## Tech Stack
-
-- Java 21
-- Spring Boot 3
-- Spring Security
-- Spring Data JPA (Hibernate)
-- MySQL
-- JWT Authentication
-- Maven
+FlowPay is a production-oriented cryptocurrency payment gateway that enables merchants to securely accept crypto payments, generate invoices, monitor blockchain transactions, manage recurring payments, track budgets, and gain AI-powered financial insights through an analytics dashboard.
 
 ---
 
-## Features
+# 🚀 Project Progress
 
-### ✅ Phase 1 - User Management
-- User Registration
-- Get All Users
-- BCrypt Password Encryption
+**Current Status:** **Phase 14 / 16 Completed (88%)**
 
-### ✅ Phase 2 - Authentication
-- Login API
-- BCrypt Password Verification
-- Custom Authentication Service
-
-### ✅ Phase 3 - JWT Security
-- JWT Token Generation
-- JWT Token Validation
-- JWT Authentication Filter
-- Stateless Security
-- Protected APIs
-
-### ✅ Phase 4 - Expense Group Management
-- Create Expense Group
-- Get All Expense Groups
-- Add Member to Group
-- View Group Members
-- Remove Member from Group
+| Phase                                     | Status          |
+| ----------------------------------------- | --------------- |
+| Phase 1 – Project Setup                   | ✅ Completed     |
+| Phase 2 – Authentication & Security       | ✅ Completed     |
+| Phase 3 – User & Merchant Management      | ✅ Completed     |
+| Phase 4 – Wallet & Invoice Management     | ✅ Completed     |
+| Phase 5 – Payment Processing              | ✅ Completed     |
+| Phase 6 – Blockchain Transaction Tracking | ✅ Completed     |
+| Phase 7 – Settlement Engine               | ✅ Completed     |
+| Phase 8 – Dashboard & Analytics           | ✅ Completed     |
+| Phase 9 – Reports & Export                | ✅ Completed     |
+| Phase 10 – Notification Service           | ✅ Completed     |
+| Phase 11 – Receipt Management             | ✅ Completed     |
+| Phase 12 – Recurring Expense Management   | ✅ Completed     |
+| Phase 13 – Budget Management              | ✅ Completed     |
+| **Phase 14 – Smart Insights & Analytics** | ✅ **Completed** |
+| Phase 15 – Admin Panel & Monitoring       | ⏳ Upcoming      |
+| Phase 16 – Production Deployment          | ⏳ Upcoming      |
 
 ---
 
-## Project Structure
+# ✨ Features
 
-```
-src
-├── config
-├── controller
-├── dto
-├── entity
-├── exception
-├── repository
-├── service
-```
+## 🔐 Authentication
+
+* JWT Authentication
+* Spring Security
+* Role-Based Authorization
+* Secure Password Encryption
+
+## 👤 User Management
+
+* User Registration
+* Login
+* Merchant Profile
+* Account Management
+
+## 💰 Wallet & Payments
+
+* Crypto Invoice Generation
+* Payment Tracking
+* Payment Status Updates
+* Wallet Balance
+* Settlement Processing
+
+## ⛓ Blockchain Integration
+
+* Transaction Monitoring
+* Confirmation Tracking
+* Transaction History
+
+## 📊 Dashboard
+
+* Revenue Dashboard
+* Expense Dashboard
+* Payment Analytics
+* Financial Summary
+
+## 📄 Reports
+
+* Monthly Reports
+* Export Reports
+* Payment History
+
+## 🔔 Notifications
+
+* Payment Alerts
+* Email Notifications
+* Transaction Updates
+
+## 🧾 Receipt Management
+
+* Generate Digital Receipts
+* Download Receipts
+* Payment Records
+
+## 🔁 Recurring Expenses
+
+* Monthly Expense Automation
+* Scheduled Payments
+* Expense Tracking
+
+## 💼 Budget Management
+
+* Budget Creation
+* Spending Limits
+* Budget Tracking
+* Budget Utilization
+
+## 🧠 Smart Insights (Phase 14)
+
+* Personalized Spending Recommendations
+* Monthly Spending Trends
+* Category-wise Spending Analysis
+* Financial Health Insights
+* Intelligent Analytics APIs
 
 ---
 
-## REST APIs
+# 🛠 Tech Stack
 
-### Authentication
+## Backend
 
-```
-POST /api/users/register
-POST /api/auth/login
-```
-
-### Users
-
-```
-GET /api/users
-```
-
-### Expense Groups
-
-```
-POST   /api/groups
-GET    /api/groups
-POST   /api/groups/{groupId}/members
-GET    /api/groups/{groupId}/members
-DELETE /api/groups/{groupId}/members/{userId}
-```
-
----
-
-## Security
-
-- BCrypt Password Hashing
-- JWT Authentication
-- Stateless Session Management
-- Spring Security Filter Chain
-- Protected REST APIs
-
----
+* Java 21
+* Spring Boot
+* Spring Security
+* Spring Data JPA
+* Hibernate
+* Maven
 
 ## Database
 
-- MySQL
-- JPA/Hibernate
-- Entity Relationships
+* PostgreSQL
 
-```
-User
-   ▲
-   │
-GroupMember
-   │
-   ▼
-ExpenseGroup
+## Authentication
+
+* JWT
+* BCrypt Password Encoder
+
+## API Testing
+
+* Postman
+
+## Version Control
+
+* Git
+* GitHub
+
+---
+
+# 📂 Project Structure
+
+```text
+FlowPay
+│
+├── authentication
+├── users
+├── wallets
+├── invoices
+├── payments
+├── blockchain
+├── settlements
+├── dashboard
+├── reports
+├── notifications
+├── receipts
+├── recurring
+├── budgets
+├── insights
+├── config
+├── security
+├── repository
+├── service
+├── controller
+└── dto
 ```
 
 ---
 
-## Current Progress
+# 📈 Analytics APIs
 
-| Phase | Status |
-|--------|--------|
-| Phase 1 | ✅ Completed |
-| Phase 2 | ✅ Completed |
-| Phase 3 | ✅ Completed |
-| Phase 4 | ✅ Completed |
-| Phase 5 | 🚧 In Progress |
+## Smart Insights
+
+```
+GET /api/insights/recommendations
+```
+
+Returns personalized financial recommendations.
 
 ---
 
-## Upcoming Features
+## Monthly Spending Trend
 
-- Expense Management
-- Expense Splitting
-- Balance Calculation
-- Settlement APIs
-- Dashboard APIs
-- Docker Support
-- Deployment
+```
+GET /api/insights/monthly-trend?userId={id}
+```
+
+Returns monthly spending statistics.
+
+---
+
+## Category Breakdown
+
+```
+GET /api/insights/category-breakdown?userId={id}
+```
+
+Returns category-wise expense distribution.
+
+---
+
+# 🏗 Architecture
+
+```text
+                 Client Application
+                        │
+                        ▼
+                  Spring Boot API
+                        │
+        ┌───────────────┼────────────────┐
+        ▼               ▼                ▼
+ Authentication     Payment Engine    Analytics
+        │               │                │
+        ▼               ▼                ▼
+     PostgreSQL   Blockchain Layer   Smart Insights
+```
+
+---
+
+# 🎯 Upcoming (Phase 15)
+
+* Admin Dashboard
+* User Management Console
+* System Monitoring
+* API Health Monitoring
+* Logs & Audit Dashboard
+* Performance Metrics
+* Role-based Admin Controls
+
+---
+
+# 🚀 Final Phase (Phase 16)
+
+* Docker Deployment
+* CI/CD Pipeline
+* Cloud Deployment
+* Production Configuration
+* HTTPS & SSL
+* Monitoring & Logging
+* Performance Optimization
+* Final Documentation
+
+---
+
+# 📌 Current Statistics
+
+* ✅ 14 Development Phases Completed
+* ✅ Secure Authentication
+* ✅ Wallet & Invoice Management
+* ✅ Blockchain Payment Tracking
+* ✅ Dashboard & Reports
+* ✅ Budget Management
+* ✅ Smart Financial Insights
+* ⏳ 2 Phases Remaining
+
+---
+
+# 👨‍💻 Author
+
+**THIRUPATHI M**
+
+**Project:** FlowPay – Crypto Payment Gateway API
+
+Built using **Java**, **Spring Boot**, **PostgreSQL**, **Spring Security**, **JWT**, **JPA/Hibernate**, and modern backend development practices.
