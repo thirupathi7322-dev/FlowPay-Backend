@@ -33,10 +33,13 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
+        logger.info("===== LOGIN API CALLED =====");
         logger.info("Login attempt for email={}", request.getEmail());
 
         Optional<User> optionalUser =
                 userRepository.findByEmail(request.getEmail());
+
+        logger.info("User found = {}", optionalUser.isPresent());
 
         if (optionalUser.isEmpty()) {
 
@@ -48,11 +51,24 @@ public class AuthService {
 
         User user = optionalUser.get();
 
+        logger.info("Database Email = {}", user.getEmail());
+        logger.info("Entered Email  = {}", request.getEmail());
+
+        logger.info("Raw Password = {}", request.getPassword());
+        logger.info("DB Password Hash = [{}]", user.getPassword());
+        logger.info("Hash Length = {}", user.getPassword().length());
+
+        for (int i = 0; i < user.getPassword().length(); i++) {
+            logger.info("Char {} = {}", i, (int) user.getPassword().charAt(i));
+        }
+
         boolean isPasswordMatched =
                 passwordEncoder.matches(
                         request.getPassword(),
                         user.getPassword()
                 );
+
+        logger.info("Password matched = {}", isPasswordMatched);
 
         if (!isPasswordMatched) {
 
@@ -62,10 +78,12 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid password");
         }
 
-        logger.info("User '{}' logged in successfully.",
-                user.getEmail());
+        logger.info("===== LOGIN SUCCESSFUL =====");
+        logger.info("Generating JWT token...");
 
         String token = jwtService.generateToken(user);
+
+        logger.info("JWT generated successfully.");
 
         return new LoginResponse(
                 user.getId(),

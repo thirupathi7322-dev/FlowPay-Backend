@@ -8,8 +8,11 @@ public class PasswordGenerator {
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        String hash = encoder.encode("flowpay123");
+        String hash =
+                "$2a$10$E3SRpgFGcDSTqj0/YAWNmO5bOAofxA4/FsVdV1lLeSF941FqQFFca";
 
-        System.out.println(hash);
+        System.out.println(
+                encoder.matches("flowpay123", hash)
+        );
     }
 }
