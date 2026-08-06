@@ -1,11 +1,16 @@
 package com.flowpay.backend.scheduler;
 
 import com.flowpay.backend.service.RecurringExpenseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RecurringExpenseScheduler {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(RecurringExpenseScheduler.class);
 
     private final RecurringExpenseService recurringExpenseService;
 
@@ -18,7 +23,7 @@ public class RecurringExpenseScheduler {
     @Scheduled(cron = "0 * * * * *")
     public void processRecurringExpenses() {
 
-        System.out.println("===== Scheduler Running =====");
+        logger.info("Recurring expense scheduler started.");
 
         recurringExpenseService.processRecurringExpenses();
     }

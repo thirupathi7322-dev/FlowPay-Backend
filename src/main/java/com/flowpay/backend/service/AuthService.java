@@ -1,22 +1,26 @@
 package com.flowpay.backend.service;
 
-import com.flowpay.backend.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import com.flowpay.backend.dto.LoginRequest;
 import com.flowpay.backend.dto.LoginResponse;
 import com.flowpay.backend.entity.User;
 import com.flowpay.backend.exception.InvalidCredentialsException;
+import com.flowpay.backend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class AuthService {
 
+    private static final Logger logger =
+            LoggerFactory.getLogger(AuthService.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
@@ -26,26 +30,23 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
+
     public LoginResponse login(LoginRequest request) {
 
-        System.out.println("===== Login API called =====");
+        logger.info("Login attempt for email={}", request.getEmail());
 
         Optional<User> optionalUser =
                 userRepository.findByEmail(request.getEmail());
 
-        System.out.println("User found: " + optionalUser.isPresent());
-
         if (optionalUser.isEmpty()) {
+
+            logger.warn("Login failed. User not found: {}",
+                    request.getEmail());
+
             throw new InvalidCredentialsException("User not found");
         }
 
         User user = optionalUser.get();
-
-        System.out.println("Database Email: " + user.getEmail());
-        System.out.println("Entered Email : " + request.getEmail());
-
-        System.out.println("Database Password: " + user.getPassword());
-        System.out.println("Entered Password : " + request.getPassword());
 
         boolean isPasswordMatched =
                 passwordEncoder.matches(
@@ -53,13 +54,17 @@ public class AuthService {
                         user.getPassword()
                 );
 
-        System.out.println("Password Matched: " + isPasswordMatched);
-
         if (!isPasswordMatched) {
+
+            logger.warn("Invalid password for user: {}",
+                    request.getEmail());
+
             throw new InvalidCredentialsException("Invalid password");
         }
 
-        System.out.println("===== Login Successful =====");
+        logger.info("User '{}' logged in successfully.",
+                user.getEmail());
+
         String token = jwtService.generateToken(user);
 
         return new LoginResponse(

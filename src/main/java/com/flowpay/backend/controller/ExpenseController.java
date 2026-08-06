@@ -1,18 +1,23 @@
 package com.flowpay.backend.controller;
 
+import com.flowpay.backend.dto.BalanceResponse;
 import com.flowpay.backend.dto.CreateExpenseRequest;
 import com.flowpay.backend.dto.ExpenseResponse;
 import com.flowpay.backend.dto.SettlementResponse;
 import com.flowpay.backend.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import com.flowpay.backend.dto.BalanceResponse;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups/{groupId}/expenses")
 public class ExpenseController {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(ExpenseController.class);
 
     private final ExpenseService expenseService;
 
@@ -34,19 +39,23 @@ public class ExpenseController {
 
         return expenseService.getGroupExpenses(groupId);
     }
+
     @GetMapping("/balances")
     public List<BalanceResponse> getBalances(
             @PathVariable Long groupId) {
 
         return expenseService.calculateBalances(groupId);
     }
+
     @GetMapping("/settlements")
     public List<SettlementResponse> getSettlements(
             @PathVariable Long groupId) {
-        System.out.println("===== SETTLEMENT API HIT =====");
+
+        logger.info("Settlement API called for groupId={}", groupId);
 
         return expenseService.calculateSettlements(groupId);
     }
+
     @GetMapping("/category/{categoryId}")
     public List<ExpenseResponse> getExpensesByCategory(
             @PathVariable Long groupId,

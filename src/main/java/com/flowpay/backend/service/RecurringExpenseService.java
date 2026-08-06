@@ -12,8 +12,9 @@ import com.flowpay.backend.repository.ExpenseGroupRepository;
 import com.flowpay.backend.repository.ExpenseRepository;
 import com.flowpay.backend.repository.RecurringExpenseRepository;
 import com.flowpay.backend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class RecurringExpenseService {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(RecurringExpenseService.class);
 
     private final RecurringExpenseRepository recurringExpenseRepository;
     private final ExpenseGroupRepository expenseGroupRepository;
@@ -74,6 +78,8 @@ public class RecurringExpenseService {
         RecurringExpense saved =
                 recurringExpenseRepository.save(recurringExpense);
 
+        logger.info("Recurring expense '{}' created successfully.", saved.getTitle());
+
         return new RecurringExpenseResponse(
                 saved.getId(),
                 saved.getTitle(),
@@ -104,6 +110,8 @@ public class RecurringExpenseService {
         List<RecurringExpense> recurringExpenses =
                 recurringExpenseRepository
                         .findByActiveTrueAndNextRun(LocalDate.now());
+
+        logger.info("Processing {} recurring expense(s).", recurringExpenses.size());
 
         for (RecurringExpense recurring : recurringExpenses) {
 
@@ -138,14 +146,17 @@ public class RecurringExpenseService {
                     recurring.setNextRun(
                             recurring.getNextRun().plusYears(1));
                     break;
+
+                default:
+                    logger.warn("Unknown recurring frequency: {}", recurring.getFrequency());
+                    break;
             }
 
             recurringExpenseRepository.save(recurring);
 
-            System.out.println(
-                    "Created recurring expense: "
-                            + recurring.getTitle()
-            );
+            logger.info("Created recurring expense: {}", recurring.getTitle());
         }
+
+        logger.info("Recurring expense processing completed.");
     }
 }

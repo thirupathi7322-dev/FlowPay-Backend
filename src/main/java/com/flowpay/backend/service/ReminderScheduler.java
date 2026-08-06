@@ -2,11 +2,16 @@ package com.flowpay.backend.service;
 
 import com.flowpay.backend.entity.User;
 import com.flowpay.backend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReminderScheduler {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(ReminderScheduler.class);
 
     private final UserRepository userRepository;
     private final NotificationService notificationService;
@@ -22,7 +27,7 @@ public class ReminderScheduler {
     @Scheduled(cron = "0 0 9 * * *")
     public void sendDailyReminder() {
 
-        System.out.println("Running Daily Reminder...");
+        logger.info("Starting daily reminder scheduler.");
 
         for (User user : userRepository.findAll()) {
 
@@ -32,6 +37,6 @@ public class ReminderScheduler {
             );
         }
 
-        System.out.println("Daily reminders completed.");
+        logger.info("Daily reminders completed successfully.");
     }
 }
